@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EF1B4147-A573-4E65-8C43-DD61C08DED5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LavenderMotors.Core", "src\LavenderMotors.Core\LavenderMotors.Core.csproj", "{165385FE-E2FC-41A1-B18D-E0485172B2C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LavenderMotors.Entities", "src\LavenderMotors.Entities\LavenderMotors.Entities.csproj", "{165385FE-E2FC-41A1-B18D-E0485172B2C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
