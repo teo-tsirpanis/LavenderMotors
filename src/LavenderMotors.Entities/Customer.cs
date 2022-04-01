@@ -15,11 +15,11 @@ public class Customer
     /// </remarks>
     public string TIN { get; set; }
     
-    public Customer(string name, string surname, string phone, string tin)
+    public Customer(string name, string surname, string phone, string TIN)
     {
         Name = name;
         Surname = surname;
         Phone = phone;
-        TIN = tin;
+        this.TIN = TIN;
     }
 }
