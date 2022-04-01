@@ -8,6 +8,6 @@ internal sealed class EngineerConfiguration : IEntityTypeConfiguration<Engineer>
 {
     public void Configure(EntityTypeBuilder<Engineer> builder)
     {
-        builder.HasOne(c => c.Manager).WithMany().OnDelete(DeleteBehavior.NoAction);
+        builder.HasOne(c => c.Manager).WithMany().HasForeignKey(c => c.ManagerId).OnDelete(DeleteBehavior.NoAction);
     }
 }
