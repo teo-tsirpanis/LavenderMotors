@@ -16,5 +16,6 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
         builder.HasOne(c => c.Customer).WithMany();
         builder.HasOne(c => c.Manager).WithMany();
         builder.HasMany(c => c.Lines).WithOne(c => c.Transaction).IsRequired().OnDelete(DeleteBehavior.NoAction);
+        builder.Ignore(c => c.TotalPrice);
     }
 }

@@ -16,8 +16,6 @@ internal sealed class TransactionLineConfiguration : IEntityTypeConfiguration<Tr
         builder.HasOne(c => c.Engineer).WithMany().IsRequired();
         builder.Property(c => c.Hours).IsRequired().HasPrecision(4, 2);
         builder.Property(c => c.PricePerHour).IsRequired().HasPrecision(8, 2);
-        // No reason to keep it in the database; it is trivially
-        // calculated from the other properties of this entity.
-        builder.Ignore(c => c.Price);
+        builder.Property(c => c.Price).HasComputedColumnSql("[Hours] * [PricePerHour]").HasPrecision(8, 2);
     }
 }
