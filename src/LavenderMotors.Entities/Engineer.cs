@@ -2,10 +2,15 @@
 
 public class Engineer : Employee
 {
-    public Manager Manager { get; set; }
+    private Manager? _manager;
 
-    public Engineer(string name, string surname, decimal salaryPerMonth, Manager manager) : base(name, surname, salaryPerMonth)
+    public Manager Manager
     {
-        Manager = manager;
+        get => _manager ?? throw Utilities.CreateUnboundValueAccessException();
+        set => _manager = value;
+    }
+
+    public Engineer(string name, string surname, decimal salaryPerMonth) : base(name, surname, salaryPerMonth)
+    {
     }
 }
