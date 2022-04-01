@@ -16,6 +16,13 @@ public class GarageContext : DbContext
     public DbSet<Manager> Managers { get; set; } = null!;
     public DbSet<Transaction> Transactions { get; set; } = null!;
 
+    public Task<List<MonthlyLedger>> GetMonthlyLedgerAsync() =>
+        Transactions
+            .Include(x => x.Lines)
+            .GroupBy(x => new { x.Date.Year, x.Date.Month })
+            .Select(x => new MonthlyLedger((uint)x.Key.Year, (uint)x.Key.Month, x.Sum(y => y.Lines.Sum(z => z.Price)), Employees.Sum(y => y.SalaryPerMonth)))
+            .ToListAsync();
+
     public GarageContext()
     {
         _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Database=LavenderMotors;";
@@ -37,6 +44,7 @@ public class GarageContext : DbContext
         modelBuilder.ApplyConfiguration(new ManagerConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionLineConfiguration());
+
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -6,7 +6,7 @@ public class MonthlyLedger
     public uint Month { get; }
     public decimal Income { get; }
     public decimal Expenses { get; }
-    public decimal Total { get; }
+    public decimal Total => Income - Expenses;
 
     public MonthlyLedger(uint year, uint month, decimal income, decimal expenses)
     {
