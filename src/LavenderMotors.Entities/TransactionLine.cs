@@ -24,9 +24,9 @@ public class TransactionLine
     }
     public decimal Hours { get; }
     public decimal PricePerHour { get; }
-    public decimal Price { get; }
+    public decimal Price => Hours * PricePerHour;
 
-    public TransactionLine(uint hours, decimal pricePerHour)
+    public TransactionLine(decimal hours, decimal pricePerHour)
     {
         Hours = hours;
         PricePerHour = pricePerHour;

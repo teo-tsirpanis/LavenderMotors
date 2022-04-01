@@ -14,6 +14,7 @@ public class GarageContext : DbContext
     public DbSet<Employee> Employees { get; set; } = null!;
     public DbSet<Engineer> Engineers { get; set; } = null!;
     public DbSet<Manager> Managers { get; set; } = null!;
+    public DbSet<Transaction> Transactions { get; set; } = null!;
 
     public GarageContext()
     {
@@ -34,6 +35,8 @@ public class GarageContext : DbContext
         modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
         modelBuilder.ApplyConfiguration(new EngineerConfiguration());
         modelBuilder.ApplyConfiguration(new ManagerConfiguration());
+        modelBuilder.ApplyConfiguration(new TransactionConfiguration());
+        modelBuilder.ApplyConfiguration(new TransactionLineConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

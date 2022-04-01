@@ -25,5 +25,5 @@ public class Transaction
     }
     public decimal TotalPrice { get; }
 
-    public List<Transaction> Transactions { get; set; } = new();
+    public List<TransactionLine> Lines { get; set; } = new();
 }
