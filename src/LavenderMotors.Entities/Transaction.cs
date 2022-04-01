@@ -23,7 +23,7 @@ public class Transaction
         get => _manager ?? throw Utilities.CreateUnboundValueAccessException();
         set => _manager = value;
     }
-    public decimal TotalPrice { get; }
+    public decimal TotalPrice => Lines.Sum(x => x.Price);
 
     public List<TransactionLine> Lines { get; set; } = new();
 }
