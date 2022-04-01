@@ -10,6 +10,8 @@ public class Engineer : Employee
         set => _manager = value;
     }
 
+    public Guid ManagerId { get; set; }
+
     public Engineer(string name, string surname, decimal salaryPerMonth) : base(name, surname, salaryPerMonth)
     {
     }
