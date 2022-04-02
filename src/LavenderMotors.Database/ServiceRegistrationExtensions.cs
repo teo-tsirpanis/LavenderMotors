@@ -13,6 +13,7 @@ public static class ServiceRegistrationExtensions
             .AddTransient<IEntityRepo<Customer>, CustomerRepo>()
             .AddTransient<IEntityRepo<Car>, CarRepo>()
             .AddTransient<IEntityRepo<Employee>, EmployeeRepo>()
+            .AddTransient<IEntityRepo<ServiceTask>, ServiceTaskRepo>()  
             ;
     }
 }
