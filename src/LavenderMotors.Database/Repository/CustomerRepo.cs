@@ -28,9 +28,9 @@ internal class CustomerRepo : IEntityRepo<Customer>
         await _context.SaveChangesAsync();
     }
 
-    public IAsyncEnumerable<Customer> GetAllAsync()
+    public async Task<IEnumerable<Customer>> GetAllAsync()
     {
-        return _context.Customers.AsAsyncEnumerable();
+        return await _context.Customers.ToListAsync();
     }
 
     public Task<Customer?> GetByIdAsync(Guid id)

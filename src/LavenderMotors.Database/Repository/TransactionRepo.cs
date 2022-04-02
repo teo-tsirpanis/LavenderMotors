@@ -28,9 +28,9 @@ internal class TransactionRepo : IEntityRepo<Transaction>
         await _context.SaveChangesAsync();
     }
 
-    public IAsyncEnumerable<Transaction> GetAllAsync()
+    public async Task<IEnumerable<Transaction>> GetAllAsync()
     {
-        return _context.Transactions.AsAsyncEnumerable();
+        return await _context.Transactions.ToListAsync();
     }
 
     public Task<Transaction?> GetByIdAsync(Guid id)

@@ -28,9 +28,9 @@ internal class CarRepo : IEntityRepo<Car>
         await _context.SaveChangesAsync();
     }
 
-    public IAsyncEnumerable<Car> GetAllAsync()
+    public async Task<IEnumerable<Car>> GetAllAsync()
     {
-        return _context.Cars.AsAsyncEnumerable();
+        return await _context.Cars.ToListAsync();
     }
 
     public Task<Car?> GetByIdAsync(Guid id)
