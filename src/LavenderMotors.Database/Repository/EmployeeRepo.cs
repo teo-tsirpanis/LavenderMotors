@@ -38,9 +38,9 @@ internal class EmployeeRepo : IEntityRepo<Employee>
         await _context.SaveChangesAsync();
     }
 
-    public IAsyncEnumerable<Employee> GetAllAsync()
+    public async Task<IEnumerable<Employee>> GetAllAsync()
     {
-        return _context.Employees.AsAsyncEnumerable();
+        return await _context.Employees.ToListAsync();
     }
 
     public Task<Employee?> GetByIdAsync(Guid id)

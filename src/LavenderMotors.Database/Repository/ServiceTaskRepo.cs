@@ -28,9 +28,9 @@ namespace LavenderMotors.Database.Repository
             await _context.SaveChangesAsync();
         }
 
-        public IAsyncEnumerable<ServiceTask> GetAllAsync()
+        public async Task<IEnumerable<ServiceTask>> GetAllAsync()
         {
-            return _context.ServiceTasks.AsAsyncEnumerable();
+            return await _context.ServiceTasks.ToListAsync();
         }
 
         public Task<ServiceTask?> GetByIdAsync(Guid id)
