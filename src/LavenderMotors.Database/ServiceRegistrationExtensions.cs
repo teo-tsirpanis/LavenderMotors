@@ -12,6 +12,7 @@ public static class ServiceRegistrationExtensions
             .AddDbContext<GarageContext>()
             .AddTransient<IEntityRepo<Customer>, CustomerRepo>()
             .AddTransient<IEntityRepo<Car>, CarRepo>()
+            .AddTransient<IEntityRepo<Employee>, EmployeeRepo>()
             ;
     }
 }
