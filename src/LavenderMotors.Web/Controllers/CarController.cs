@@ -79,7 +79,7 @@ namespace LavenderMotors.Web.Controllers
             {
                 var currentCar = await _carRepo.GetByIdAsync(id);
                 if (currentCar is null)
-                    return BadRequest("Could not find car");
+                    return BadRequest("Could not find car.");
                 currentCar.Brand = carUpdateViewModel.Brand;
                 currentCar.Model = carUpdateViewModel.Model;
                 currentCar.CarRegistrationNumber = carUpdateViewModel.CarRegistrationNumber;
