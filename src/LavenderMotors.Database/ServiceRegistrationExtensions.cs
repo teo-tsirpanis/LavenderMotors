@@ -11,6 +11,7 @@ public static class ServiceRegistrationExtensions
         return serviceDescriptors
             .AddDbContext<GarageContext>()
             .AddTransient<IEntityRepo<Customer>, CustomerRepo>()
+            .AddTransient<IEntityRepo<Car>, CarRepo>()
             ;
     }
 }
