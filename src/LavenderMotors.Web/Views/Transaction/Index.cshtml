@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LavenderMotors.Entities.Transaction>
+﻿@model IEnumerable<LavenderMotors.Web.Models.TransactionSummaryViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -16,13 +16,13 @@
                 @Html.DisplayNameFor(model => model.Date)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Customer)
+                @Html.DisplayNameFor(model => model.CustomerName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Car)
+                @Html.DisplayNameFor(model => model.CarRegistrationNumber)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Manager)
+                @Html.DisplayNameFor(model => model.ManagerName)
             </th>
             <th></th>
         </tr>
@@ -34,18 +34,17 @@
                 @Html.DisplayFor(modelItem => item.Date)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Customer.Name)
+                @Html.DisplayFor(modelItem => item.CustomerName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Car.Brand)
+                @Html.DisplayFor(modelItem => item.CarRegistrationNumber)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Manager.Name)
+                @Html.DisplayFor(modelItem => item.ManagerName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
             </td>
         </tr>
 }

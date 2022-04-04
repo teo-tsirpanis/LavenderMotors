@@ -4,167 +4,176 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LavenderMotors.Database;
 using LavenderMotors.Entities;
+using LavenderMotors.Web.Models;
 
-namespace LavenderMotors.Web.Controllers
+namespace LavenderMotors.Web.Controllers;
+
+public class TransactionController : Controller
 {
-    public class TransactionController : Controller
+    private readonly GarageContext _context;
+
+    public TransactionController(GarageContext context)
     {
-        private readonly GarageContext _context;
+        _context = context;
+    }
 
-        public TransactionController(GarageContext context)
-        {
-            _context = context;
-        }
-
-        // GET: Transaction
-        public async Task<IActionResult> Index()
-        {
-            var garageContext = _context.Transactions.Include(t => t.Car).Include(t => t.Customer).Include(t => t.Manager);
-            return View(await garageContext.ToListAsync());
-        }
-
-        // GET: Transaction/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var transaction = await _context.Transactions
+    // GET: Transaction
+    public async Task<IActionResult> Index()
+    {
+        var garageContext =
+            _context.Transactions
                 .Include(t => t.Car)
                 .Include(t => t.Customer)
                 .Include(t => t.Manager)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
+                .Select(x => new TransactionSummaryViewModel(x));
+        return View(await garageContext.ToListAsync());
+    }
 
-            return View(transaction);
+    // GET: Transaction/Details/5
+    public async Task<IActionResult> Details(Guid id)
+    {
+        var transaction = await _context.Transactions
+            .Include(t => t.Car)
+            .Include(t => t.Customer)
+            .Include(t => t.Manager)
+            .Include(t => t.Lines)
+            .ThenInclude(t => t.Engineer)
+            .Include(t => t.Lines)
+            .ThenInclude(t => t.ServiceTask)
+            .FirstOrDefaultAsync(m => m.Id == id);
+        if (transaction == null)
+        {
+            return NotFound();
         }
 
-        // GET: Transaction/Create
-        public IActionResult Create()
+        return View(transaction);
+    }
+
+    // GET: Transaction/Create
+    public IActionResult Create()
+    {
+        ViewData["CarId"] = new SelectList(_context.Cars, nameof(Car.Id), nameof(Car.CarRegistrationNumber));
+        ViewData["CustomerId"] = new SelectList(_context.Customers, nameof(Customer.Id), nameof(Customer.Name));
+        ViewData["ManagerId"] = new SelectList(_context.Managers, nameof(Manager.Id), nameof(Manager.Name));
+        return View();
+    }
+
+    // POST: Transaction/Create
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(TransactionCreateViewModel tcvm)
+    {
+        if (ModelState.IsValid)
         {
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Brand");
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name");
-            ViewData["ManagerId"] = new SelectList(_context.Managers, "Id", "EmployeeType");
-            return View();
-        }
-
-        // POST: Transaction/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Date,CustomerId,CarId,ManagerId")] Transaction transaction)
-        {
-            if (ModelState.IsValid)
+            var car = await _context.Cars.FindAsync(tcvm.CarId);
+            var customer = await _context.Customers.FindAsync(tcvm.CustomerId);
+            var manager = await _context.Managers.FindAsync(tcvm.ManagerId);
+            if (car is null || customer is null || manager is null)
             {
-                transaction.Id = Guid.NewGuid();
-                _context.Add(transaction);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Brand", transaction.CarId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", transaction.CustomerId);
-            ViewData["ManagerId"] = new SelectList(_context.Managers, "Id", "EmployeeType", transaction.ManagerId);
-            return View(transaction);
-        }
-
-        // GET: Transaction/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+                return BadRequest("Car, customer or manager not found");
             }
 
-            var transaction = await _context.Transactions.FindAsync(id);
-            if (transaction == null)
+            var transaction = new Transaction
             {
-                return NotFound();
-            }
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Brand", transaction.CarId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", transaction.CustomerId);
-            ViewData["ManagerId"] = new SelectList(_context.Managers, "Id", "EmployeeType", transaction.ManagerId);
-            return View(transaction);
-        }
-
-        // POST: Transaction/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Date,CustomerId,CarId,ManagerId")] Transaction transaction)
-        {
-            if (id != transaction.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(transaction);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TransactionExists(transaction.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Brand", transaction.CarId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", transaction.CustomerId);
-            ViewData["ManagerId"] = new SelectList(_context.Managers, "Id", "EmployeeType", transaction.ManagerId);
-            return View(transaction);
-        }
-
-        // GET: Transaction/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var transaction = await _context.Transactions
-                .Include(t => t.Car)
-                .Include(t => t.Customer)
-                .Include(t => t.Manager)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
-
-            return View(transaction);
-        }
-
-        // POST: Transaction/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var transaction = await _context.Transactions.FindAsync(id);
-            _context.Transactions.Remove(transaction);
+                Car = car,
+                Customer = customer,
+                Manager = manager,
+                Date = tcvm.Date
+            };
+            _context.Transactions.Add(transaction);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        ViewData["CarId"] = new SelectList(_context.Cars, "Id", nameof(Car.CarRegistrationNumber), tcvm.CarId);
+        ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", tcvm.CustomerId);
+        ViewData["ManagerId"] = new SelectList(_context.Managers, "Id", "EmployeeType", tcvm.ManagerId);
+        return View(tcvm);
+    }
 
-        private bool TransactionExists(Guid id)
+    // GET: Transaction/Edit/5
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
         {
-            return _context.Transactions.Any(e => e.Id == id);
+            return NotFound();
         }
+
+        var transaction = await _context.Transactions
+            .Include(t => t.Car)
+            .Include(t => t.Customer)
+            .Include(t => t.Manager)
+            .Include(t => t.Lines)
+            .ThenInclude(t => t.Engineer)
+            .Include(t => t.Lines)
+            .ThenInclude(t => t.ServiceTask)
+            .FirstOrDefaultAsync(m => m.Id == id);
+        if (transaction == null)
+        {
+            return NotFound();
+        }
+        ViewData["CarId"] = new SelectList(_context.Cars, "Id", nameof(Car.CarRegistrationNumber), transaction.CarId);
+        ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", transaction.CustomerId);
+        ViewData["ManagerId"] = new SelectList(_context.Managers, "Id", "Name", transaction.ManagerId);
+        var tevm = new TransactionEditViewModel(transaction);
+        return View(tevm);
+    }
+
+    // POST: Transaction/Edit/5
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Guid id, TransactionEditViewModel tevm)
+    {
+        var transaction = await _context.Transactions
+            .Include(t => t.Car)
+            .Include(t => t.Customer)
+            .Include(t => t.Manager)
+            .Include(t => t.Lines)
+            .ThenInclude(t => t.Engineer)
+            .Include(t => t.Lines)
+            .ThenInclude(t => t.ServiceTask)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (transaction is null)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                transaction.Date = tevm.Date;
+                transaction.CarId = tevm.CarId;
+                transaction.CustomerId = tevm.CustomerId;
+                transaction.ManagerId = tevm.ManagerId;
+                _context.Update(transaction);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await TransactionExistsAsync(tevm.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Brand", transaction.CarId);
+        ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", transaction.CustomerId);
+        ViewData["ManagerId"] = new SelectList(_context.Managers, "Id", "EmployeeType", transaction.ManagerId);
+        return View(transaction);
+    }
+
+    private Task<bool> TransactionExistsAsync(Guid id)
+    {
+        return _context.Transactions.AnyAsync(e => e.Id == id);
     }
 }
