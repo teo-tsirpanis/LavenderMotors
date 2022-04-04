@@ -1,4 +1,6 @@
-﻿namespace LavenderMotors.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LavenderMotors.Entities;
 
 public class TransactionLine
 {
@@ -16,6 +18,7 @@ public class TransactionLine
 
     public Guid TransactionId { get; set; }
 
+    [Display(Name = "Service Task")]
     public ServiceTask ServiceTask
     {
         get => _serviceTask ?? throw Utilities.CreateUnboundValueAccessException();
@@ -34,6 +37,7 @@ public class TransactionLine
 
     public decimal Hours { get; }
 
+    [Display(Name = "Price per hour")]
     public decimal PricePerHour { get; }
 
     public decimal Price { get; set; }
